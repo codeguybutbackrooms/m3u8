@@ -1,30 +1,30 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json()); // BẮT BUỘC
+app.use(cors());
+app.use(express.json());
 
-app.post("/api/download", async (req, res) => {
-  try {
-    const { url } = req.body;
+app.post("/api/download", (req, res) => {
+  const { url } = req.body;
 
-    if (!url) {
-      return res.status(400).json({ error: "Missing url" });
-    }
-
-    // test trước cho chắc
-    res.json({
-      success: true,
-      message: "API chạy OK",
-      urlReceived: url
-    });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!url) {
+    return res.status(400).json({ error: "Missing url" });
   }
+
+  res.json({
+    success: true,
+    message: "Backend OK 😎",
+    url
+  });
+});
+
+app.get("/", (req, res) => {
+  res.send("Backend alive");
 });
 
 app.listen(PORT, () => {
-  console.log("Server running at http://localhost:" + PORT);
+  console.log("Server running on port", PORT);
 });
