@@ -9,14 +9,14 @@ router.post("/download", async (req, res) => {
     if (!url) {
         return res.status(400).json({
             success: false,
-            message: "Thiếu link m3u8 rồi ông ơi"
+            message: "Excuse me? Where is the link?"
         });
     }
 
     if (!url.includes(".m3u8")) {
         return res.status(400).json({
             success: false,
-            message: "Link này nhìn không giống m3u8 lắm 🤨"
+            message: "Doesn't look like m3u8 file bro"
         });
     }
 
