@@ -47,53 +47,32 @@
 
     <div id="terminal"></div>
 
-    <script>
-        const btn = document.getElementById("start");
-        const input = document.getElementById("m3u8");
-        const terminal = document.getElementById("terminal");
+<script>
+async function download() {
+  try {
+    const res = await fetch("/api/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        url: "https://example.com/video.m3u8"
+      })
+    });
 
-        function log(text) {
-            terminal.textContent += text + "\n";
-            terminal.scrollTop = terminal.scrollHeight;
-        }
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error("HTTP " + res.status + ": " + text);
+    }
 
-        btn.onclick = async () => {
-            terminal.textContent = "";
-            const url = input.value.trim();
-            if (!url) {
-                log("Thiếu link m3u8");
-                return;
-            }
+    const data = await res.json();
+    console.log("SERVER:", data);
 
-            log("Gửi request tới server");
+  } catch (err) {
+    console.error("ERROR:", err.message);
+  }
+}
+</script>
 
-            const res = await fetch("/api/download", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url })
-            });
-
-            const data = await res.json();
-            if (!data.success) {
-                log(data.message);
-                return;
-            }
-
-            const jobId = data.jobId;
-            log("JobId: " + jobId);
-            log("Kết nối tới progress stream");
-
-            const evt = new EventSource("/api/progress?jobId=" + jobId);
-
-            evt.onmessage = e => {
-                log(e.data);
-            };
-
-            evt.addEventListener("end", () => {
-                log("Hoàn tất");
-                evt.close();
-            });
-        };
-    </script>
 </body>
   </html>
