@@ -1,24 +1,30 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-
-const downloadRoute = require("./routes/download");
-const { sseHandler } = require("./sse/progress");
+import express from "express";
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
-app.use(express.json());
+app.use(express.json()); // BẮT BUỘC
 
-app.get("/api/progress", sseHandler);
-app.use("/api", downloadRoute);
+app.post("/api/download", async (req, res) => {
+  try {
+    const { url } = req.body;
 
-app.use("/", express.static(path.join(__dirname, "../frontend")));
+    if (!url) {
+      return res.status(400).json({ error: "Missing url" });
+    }
+
+    // test trước cho chắc
+    res.json({
+      success: true,
+      message: "API chạy OK",
+      urlReceived: url
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(PORT, () => {
-    console.log("===================================");
-    console.log("[server] M3U8 Downloader running 🚀");
-    console.log(`http://localhost:${PORT}`);
-    console.log("===================================");
+  console.log("Server running at http://localhost:" + PORT);
 });
